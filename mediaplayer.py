@@ -83,7 +83,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.show()
 
 
-
     def openfile(self):
         path, _ = QFileDialog.getOpenFileName(self, "Open mediafile", "", "*.mp3;*.mp4"
                                                                      ";*.mov")
