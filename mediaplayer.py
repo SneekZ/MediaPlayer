@@ -3,9 +3,10 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtMultimedia import *
 from PyQt5.QtMultimediaWidgets import *
+from PyQt5 import uic
+from pytube import YouTube
 
 from mainwindow import Ui_MainWindow
-
 
 def timef(t):
     h, r = divmod(t, 3600000)
@@ -45,7 +46,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setupUi(self)
-
         self.player = QMediaPlayer()
 
         self.player.play()
@@ -70,18 +70,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.model = PlaylistModel(self.playlist)
         self.playlistView.setModel(self.model)
-        self.playlist.currentIndexChanged.connect(self.cpp)
-
-        self.player.durationChanged.connect(self.ut)
-        self.player.positionChanged.connect(self.up)
+        self.playlist.currentIndexChanged.connect(self.playlist_position_changed)
+        self.player.durationChanged.connect(self.update_time)
+        self.player.positionChanged.connect(self.update_position)
         self.timeSlider.valueChanged.connect(self.player.setPosition)
-
         self.open_file_action.triggered.connect(self.openfile)
-
-        self.setAcceptDrops(True)
-
+        self.menuYouTube.triggered.connect(self.yt)
         self.show()
 
+    def yt(self):
+        self.ytube = uic.loadUi("dw.ui")
+        self.ytube.pushButton.clicked.connect(self.yt1)
+        self.ytube.show()
+
+    def yt1(self):
+        link = self.ytube.line.text()
+        path = self.ytube.line_2.text()
+        yt = YouTube('https://www.youtube.com/watch?v=FS8BWA-vgdI')
+        videos = yt.get_videos()
+        first_video = videos[0]
+        first_video.download('mediaplayer')
 
     def openfile(self):
         path, _ = QFileDialog.getOpenFileName(self, "Open mediafile", "", "*.mp3;*.mp4"
@@ -95,14 +103,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.model.layoutChanged.emit()
 
-    def ut(self, mc):
+    def update_time(self, mc):
         self.timeSlider.setMaximum(self.player.duration())
         duration = self.player.duration()
 
         if duration >= 0:
             self.totalTimeLabel.setText(timef(duration))
 
-    def up(self):
+    def update_position(self):
         position = self.player.position()
         if position >= 0:
             self.currentTimeLabel.setText(timef(position))
@@ -113,7 +121,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-    def cpp(self, i):
+    def playlist_position_changed(self, i):
         if i > -1:
             ix = self.model.index(i)
             self.playlistView.setCurrentIndex(ix)
@@ -127,7 +135,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 if __name__ == '__main__':
     app = QApplication([])
-
 
     window = MainWindow()
     app.exec_()
