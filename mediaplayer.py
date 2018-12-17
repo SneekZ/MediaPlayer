@@ -8,9 +8,6 @@ from mainwindow import Ui_MainWindow
 
 
 def timef(t):
-    # s = 1000
-    # m = 60000
-    # h = 360000
     h, r = divmod(t, 3600000)
     m, r = divmod(r, 60000)
     s, _ = divmod(r, 1000)
@@ -73,10 +70,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.model = PlaylistModel(self.playlist)
         self.playlistView.setModel(self.model)
-        self.playlist.currentIndexChanged.connect(self.playlist_position_changed)
+        self.playlist.currentIndexChanged.connect(self.cpp)
 
-        self.player.durationChanged.connect(self.update_time)
-        self.player.positionChanged.connect(self.update_position)
+        self.player.durationChanged.connect(self.ut)
+        self.player.positionChanged.connect(self.up)
         self.timeSlider.valueChanged.connect(self.player.setPosition)
 
         self.open_file_action.triggered.connect(self.openfile)
@@ -99,14 +96,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.model.layoutChanged.emit()
 
-    def update_time(self, mc):
+    def ut(self, mc):
         self.timeSlider.setMaximum(self.player.duration())
         duration = self.player.duration()
 
         if duration >= 0:
             self.totalTimeLabel.setText(timef(duration))
 
-    def update_position(self):
+    def up(self):
         position = self.player.position()
         if position >= 0:
             self.currentTimeLabel.setText(timef(position))
@@ -117,7 +114,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-    def playlist_position_changed(self, i):
+    def cpp(self, i):
         if i > -1:
             ix = self.model.index(i)
             self.playlistView.setCurrentIndex(ix)
