@@ -86,10 +86,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def yt1(self):
         link = self.ytube.line.text()
         path = self.ytube.line_2.text()
-        yt = YouTube('https://www.youtube.com/watch?v=FS8BWA-vgdI')
+        yt = YouTube(link)
         videos = yt.get_videos()
         first_video = videos[0]
-        first_video.download('mediaplayer')
+        first_video.download(path)
 
     def openfile(self):
         path, _ = QFileDialog.getOpenFileName(self, "Open mediafile", "", "*.mp3;*.mp4"
